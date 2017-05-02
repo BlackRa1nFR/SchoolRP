@@ -1,0 +1,21 @@
+
+"Gamemode"
+{
+	"base"			"base"
+	"title"			"SchoolRP"
+	"maps"			"^rp_blacklake"
+	"menusystem"	"1"
+	"workshopid"	""
+
+	"settings"
+	{
+		1
+		{
+			"name"		"ex_test"
+			"text"		"Test"
+			"help"		"Testing"
+			"type"		"numeric"
+			"default"	"1"
+		}
+	}
+}
