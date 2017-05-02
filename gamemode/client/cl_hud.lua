@@ -265,9 +265,7 @@ local function OverheadNames()
 	for k,v in pairs(player.GetAll()) do
 		local dist = v:GetPos():Distance(LocalPlayer():GetPos())
 
-		if dist <= 400 then
-			if dist > 400 then return end
-
+		if v ~= LocalPlayer() and dist <= 400 then
 			local alphaStrength = 1 - (dist) / 400
 			if alphaStrength < 0 then
 				alphaStrength = 0

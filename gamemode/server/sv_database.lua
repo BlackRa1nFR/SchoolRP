@@ -41,7 +41,7 @@ end
 
 function player:dbDefault()
 	for k,v in pairs(defaultValues) do
-		if true or self:dbGetValue(k) == nil then
+		if self:dbGetValue(k) == nil then
 			self:dbSetValue(k, v)
 		end
 	end
