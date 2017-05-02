@@ -14,8 +14,9 @@ local TravelPoints = {
 -- models/Humans/Group03/male_06.mdl -- white guy
 -- models/Humans/Group02/Male_05.mdl -- other white guy
 
-function ENT:Respawn()
+function ENT:GoToRespawn()
 	local p = POINTS[ROAMING_POINTS[math.random(#ROAMING_POINTS)]]
+	print (p[1])
 	self:SetPos(p[1] + Vector(math.random(-50, 50), math.random(-50, 50), 0))
 	self:SetAngles(p[2])
 end
@@ -23,7 +24,7 @@ end
 function ENT:Initialize()
 	self.Posted = false
 	self:SetModel( "models/monk.mdl" )
-	self:SetCollisionGroup(COLLISION_GROUP_WORLD)
+	self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
 	self.stuckCount = 0
 	self.Cancel = false
 	self:SetCustomCollisionCheck( true )
@@ -39,6 +40,20 @@ end
 
 function ENT:AltModel(model)
 	self:SetModel(model)
+end
+
+function ENT:SetGender(gender)
+	self.gender = gender
+end
+
+function ENT:Think()
+	if IsCurfew() then
+		for k,v in pairs(ents.FindInSphere(self:GetPos(), 200)) do
+			if v:IsPlayer() then
+				v:GiveDetention(60)
+			end
+		end
+	end
 end
 
 function ENT:MoveToPos( pos, options )
@@ -67,7 +82,7 @@ function ENT:MoveToPos( pos, options )
 			if self:GetPos():Distance(pos) < 75 then
 				return "stuck"
 			else
-				self:Respawn()
+				self:GoToRespawn()
 			end
 		end
 
@@ -90,7 +105,13 @@ function ENT:MoveToPos( pos, options )
 end
 
 function ENT:GetRandom()
-	return ROAMING_POINTS[math.random(#ROAMING_POINTS)]
+	points = ROAMING_POINTS
+
+	if self.RoamPoints then
+		points = self.RoamPoints
+	end
+	
+	return points[math.random(#points)]
 end
 
 function ENT:RunBehaviour()
@@ -135,6 +156,7 @@ function ENT:RunBehaviour()
 				dir = -dir
 			end
 
+			a.roll = 0
 			a.yaw = a.yaw + dir
 			pos = pos + dir
 
@@ -152,12 +174,14 @@ function ENT:SetDestination(point)
 	self.Cancel = true
 end
 
-function ENT:Roam()
+function ENT:Roam(points)
 	self.Posted = false
 	self.Cancel = true
+	self.RoamPoints = points
 end
 
 function ENT:Use( activator, caller, type, value )
+	print("Someone tried to use you!")
 end
 
 function ENT:Touch( activator, caller, type, value )

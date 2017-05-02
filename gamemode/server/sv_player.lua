@@ -38,3 +38,30 @@ function player:GiveGamemodeWeapons()
 		self:Give(weapon)
 	end
 end
+
+function player:GiveDetention(time)
+	if not self.inDetention then
+		local p = POINTS[DETENTION_POINTS[math.random(#DETENTION_POINTS)]]
+		self:SetPos(p[1])
+		self:SetAngles(p[2])
+
+		self.inDetention = true
+
+		net.Start("notification")
+			net.WriteTable({
+				["detention"] = CurTime() + time
+			})
+		net.Send(self)
+
+		timer.Simple(
+			time,
+			function()
+				self.inDetention = false
+				local g = math.random(1, 2)
+				local p = POINTS[DORM_POINTS[g][math.random(#DORM_POINTS[g])]]
+				self:SetPos(p[1])
+				self:SetAngles(p[2])
+			end
+		)
+	end
+end

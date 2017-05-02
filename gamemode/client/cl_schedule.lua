@@ -51,6 +51,7 @@ local function DrawSchedule()
 
 		if s then
 			for i=1,#s do
+				print (s[i])
 				local c = CLASSES[s[i]]
 				draw.SimpleText(
 					i .. ". " .. c.Name .. " - " .. c.Room,

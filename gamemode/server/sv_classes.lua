@@ -4,7 +4,11 @@ CurPeriod = -1
 
 local Students = {}
 
-function StartNewDay()
+function StartNewDay(timeStart)
+	if not timeStart then
+		timeStart = 0
+	end
+
 	CurPeriod = 0
 	print ("Creating a new day!")
 	-- Clean up if refreshing
@@ -12,7 +16,7 @@ function StartNewDay()
 	timer.Remove("StartClasses")
 	timer.Remove("PeriodTimer")
 
-	DayTime = CurTime()
+	DayTime = CurTime() - timeStart * CalcMinute
 	SetGlobalInt("DayTime", DayTime)
 	SetGlobalInt("ClassPeriod", CurPeriod)
 	SetGlobalInt("ClassPeriodEnds", -1)
@@ -28,14 +32,16 @@ function StartNewDay()
 
 	-- Start classes at 7:00 AM
 	-- CalcHour == 1 in-game hour
-	timer.Create(
-		"StartClasses",
-		CalcHour * 7,
-		1,
-		function()
-			CreatePeriods()
-		end
-	)
+	if CalcMinute * SchoolStarts - timeStart * CalcMinute > 0 then
+		timer.Create(
+			"StartClasses",
+			CalcMinute * SchoolStarts - timeStart * CalcMinute,
+			1,
+			function()
+				CreatePeriods()
+			end
+		)
+	end
 end
 
 function CreatePeriods()
@@ -49,7 +55,7 @@ function CreatePeriods()
 	timer.Create(
 		"PeriodTimer",
 		LengthOfPeriod + PeriodIntermission,
-		NumberOfPeriods,
+		NumberOfPeriods-1,
 		function()
 			CurPeriod = CurPeriod + 1
 			StartPeriod(CurPeriod)
@@ -58,7 +64,7 @@ function CreatePeriods()
 end
 
 function StartPeriod(period)
-	if period > NumberOfPeriods then
+	if period >= NumberOfPeriods then
 		SetGlobalInt("ClassPeriod", 0)
 		SetGlobalInt("ClassPeriodEnds", -1)
 
@@ -104,19 +110,20 @@ function StartPeriod(period)
 
 							v.ent:SetDestination(d)
 						else
-							v.ent:Roam()
+							v.ent:Roam(SCHOOL_POINTS)
 						end
 					end
 				end
 
 				for k,v in pairs(Students) do
 					if v.ent then
+						print (v.Schedule[period])
 						local c = CLASSES[v.Schedule[period]]
 						local d = 's_' .. c.Room
 
 						v.ent:SetDestination(d)
 					else
-						v.ent:Roam()
+						v.ent:Roam(SCHOOL_POINTS)
 					end
 				end
 			end
@@ -200,7 +207,7 @@ for k,v in pairs(ents.GetAll()) do
 end
 
 timer.Simple(
-	70,
+	2,
 	function()
 		-- Spawn all teachers
 		for k,v in pairs(TEACHERS) do
@@ -208,50 +215,53 @@ timer.Simple(
 		end
 
 		local schs = {
-			{
-				 "AlgerbraI",
-				 "BiologyI",
-				 "Lunch",
-				 "English9",
-				 "WorldHistory"
+			[9] = {
+				[1] = {"AlgerbraI"},
+				[2] = {"BiologyI", "EarthScience"},
+				[3] = {"Lunch"},
+				[4] = {"English9"},
+				[5] = {"WorldHistory", "Government"},
 			},
-			{
-				 "AlgerbraII",
-				 "BiologyI",
-				 "Lunch",
-				 "English9",
-				 "WorldHistory"
+			[10] = {
+				[1] = {"PhysicsI", "ChemistryI"},
+				[2] = {"AlgerbraII"},
+				[3] = {"Lunch"},
+				[4] = {"AmericanHistory", "Sociology"},
+				[5] = {"English10"},
 			},
-			{
-				 "AlgerbraI",
-				 "BiologyI",
-				 "Lunch",
-				 "English9",
-				 "EarthScienceI"
+			[11] = {
+				[1] = {"Geometry"},
+				[2] = {"BiologyI", "EarthScienceI"},
+				[3] = {"Lunch"},
+				[4] = {"English11"},
+				[5] = {"WorldHistory", "Government"},
 			},
-			{
-				 "AlgerbraI",
-				 "BiologyI",
-				 "Lunch",
-				 "English9",
-				 "Sociology"
+			[12] = {
+				[1] = {"PhysicsI", "ChemistryI"},
+				[2] = {"PreCalculus"},
+				[3] = {"Lunch"},
+				[4] = {"AmericanHistory", "Sociology"},
+				[5] = {"English12"},
 			},
 		}
 
-		for i=1,10 do
+		for i=1,20 do
 			local gender = math.random(1,2)
+			local grade = math.random(9,12)
+			local sch = GenerateSchedule(grade)
 
 			local s = {
 				["Name"] = TEACHER_NAMES[math.random(#TEACHER_NAMES)],
-				["Title"] = "9th Grader",
-				["Model"] = TEACHER_MODELS[gender][math.random(#TEACHER_MODELS[gender])],
-				["Schedule"] = schs[math.random(#schs)],
+				["Title"] = grade .. "th Grader",
+				["Model"] = STUDENT_MODELS[gender][math.random(#STUDENT_MODELS[gender])],
+				["Schedule"] = sch,
 			}
 			s.ent = SpawnStudent(s)
+			s.ent:SetGender(gender)
 			table.insert(Students, s)
 		end
 	end
 )
 
 -- Start a new day.
-StartNewDay()
+StartNewDay(StartAtTime)

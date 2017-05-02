@@ -1,4 +1,27 @@
 
+STUDENT_MODELS = {
+	-- Male
+	[1] = {
+		"models/Humans/Group01/Male_01.mdl",
+		"models/Humans/Group01/male_02.mdl",
+		"models/Humans/Group01/male_03.mdl",
+		"models/Humans/Group01/Male_04.mdl",
+		"models/Humans/Group01/Male_05.mdl",
+		"models/Humans/Group01/male_06.mdl",
+		"models/Humans/Group01/male_07.mdl",
+		"models/Humans/Group01/male_09.mdl",
+	},
+	-- Female
+	[2] = {
+		"models/Humans/Group01/Female_01.mdl",
+		"models/Humans/Group01/Female_02.mdl",
+		"models/Humans/Group01/Female_03.mdl",
+		"models/Humans/Group01/Female_04.mdl",
+		"models/Humans/Group01/Female_06.mdl",
+		"models/Humans/Group01/Female_07.mdl",
+	},
+}
+
 if SERVER then
 	TEACHER_NAMES = {
 		"Smith",
@@ -390,16 +413,22 @@ if SERVER then
 			["Title"] = "Science Teacher",
 		},
 		[5] = {
-			["Title"] = "Enlish Teacher",
+			["Title"] = "English Teacher",
 		},
 		[6] = {
-			["Title"] = "Enlish Teacher",
+			["Title"] = "English Teacher",
 		},
 		[7] = {
 			["Title"] = "Social Studies Teacher",
 		},
 		[8] = {
 			["Title"] = "Social Studies Teacher",
+		},
+		[9] = {
+			["Title"] = "Math Teacher",
+		},
+		[10] = {
+			["Title"] = "CompSci Teacher",
 		},
 	}
 
@@ -423,6 +452,11 @@ CLASSES = {
 		["Room"] = "Cafe",
 		["Subject"] = "Lunch",
 		["Name"] = "Lunch",
+	},
+	["PreAlgerbra"] = {
+		["Room"] = "B107",
+		["Subject"] = "Math",
+		["Name"] = "Pre-Algerbra",
 	},
 	["AlgerbraI"] = {
 		["Room"] = "A01",
@@ -463,7 +497,7 @@ CLASSES = {
 	["EarthScienceI"] = {
 		["Room"] = "B103",
 		["Subject"] = "Science",
-		["Name"] = "EarthScience I",
+		["Name"] = "Earth Science I",
 	},
 
 	["English9"] = {
@@ -507,26 +541,79 @@ CLASSES = {
 		["Subject"] = "Social Studies",
 		["Name"] = "Sociology",
 	},
+
+	["ComputerScienceIA"] = {
+		["Room"] = "ComputerLab1",
+		["Subject"] = "Science",
+		["Name"] = "Computer Science I",
+	},
+	["ComputerScienceIB"] = {
+		["Room"] = "ComputerLab2",
+		["Subject"] = "Science",
+		["Name"] = "Computer Science I",
+	},
 }
 
 SCHEDULE = {
 	[1] = {
-		[1] = "AlgerbraI", [2] = "Geometry",
-		[3] = "PhysicsI", [4] = "ChemistryI",
+		[1] = "AlgerbraI", [2] = "Geometry", [9] = "PreAlgerbra",
+		[3] = "PhysicsI", [4] = "ChemistryI", [10] = "ComputerScienceIA",
 	},
 	[2] = {
 		[1] = "AlgerbraII", [2] = "PreCalculus",
-		[3] = "BiologyI", [4] = "EarthScienceI",
+		[3] = "BiologyI", [4] = "EarthScienceI", [10] = "ComputerScienceIB",
 	},
 	[3] = {
 		[-1] = true
 	},
 	[4] = {
-		[7] = "WorldHistory", [8] = "Government",
+		[7] = "AmericanHistory", [8] = "Sociology",
 		[5] = "English9", [6] = "English11",
 	},
 	[5] = {
-		[7] = "AmericanHistory", [8] = "Sociology",
+		[7] = "WorldHistory", [8] = "Government",
 		[5] = "English10", [6] = "English12",
 	},
 }
+
+local schs = {
+	[9] = {
+		[1] = {"AlgerbraI", "PreAlgerbra"},
+		[2] = {"ComputerScienceIB"},
+		[3] = {"Lunch"},
+		[4] = {"English9"},
+		[5] = {"WorldHistory", "Government"},
+	},
+	[10] = {
+		[1] = {"PhysicsI", "ChemistryI", "ComputerScienceIA"},
+		[2] = {"AlgerbraII"},
+		[3] = {"Lunch"},
+		[4] = {"AmericanHistory", "Sociology"},
+		[5] = {"English10"},
+	},
+	[11] = {
+		[1] = {"Geometry"},
+		[2] = {"BiologyI", "EarthScienceI", "ComputerScienceIB"},
+		[3] = {"Lunch"},
+		[4] = {"English11"},
+		[5] = {"WorldHistory", "Government"},
+	},
+	[12] = {
+		[1] = {"PhysicsI", "ChemistryI", "ComputerScienceIA"},
+		[2] = {"PreCalculus"},
+		[3] = {"Lunch"},
+		[4] = {"AmericanHistory", "Sociology"},
+		[5] = {"English12"},
+	},
+}
+
+function GenerateSchedule(grade)
+	local sch = {}
+	local possibleSchs = schs[grade]
+
+	for i=1,NumberOfPeriods do
+		sch[i] = possibleSchs[i][math.random(#possibleSchs[i])]
+	end
+
+	return sch
+end

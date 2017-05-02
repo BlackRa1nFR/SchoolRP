@@ -1,4 +1,33 @@
 
+CurrentDayTime = -1
+CurrentDayHour = -1
+
+local IsBellRinging = false
+local ClassChangeLast = false
+
+sound.Add( {
+	name = "RingBell",
+	channel = CHAN_STATIC,
+	volume = 0.4,
+	level = 80,
+	sound = "ambient/alarms/alarm1.wav"
+} )
+
+local function RingBell()
+	if not IsBellRinging then
+		IsBellRinging = true
+		LocalPlayer():EmitSound("RingBell")
+
+		timer.Simple(
+			4,
+			function()
+				LocalPlayer():StopSound("RingBell")
+				IsBellRinging = false
+			end
+		)
+	end
+end
+
 local function TimeHud()
 	local W, H = ScrW(), ScrH()
 	local w,h = 120, 60
@@ -20,11 +49,7 @@ local function TimeHud()
 		TEXT_ALIGN_CENTER
 	)
 
-	local curtime = CurTime() - GetGlobalInt("DayTime")
-	local realtimec = curtime / LengthOfDay
-	local realtime =  realtimec * SecondsInDay
-
-	local time = string.FormattedTime(realtime)
+	local time = string.FormattedTime(CurrentDayTime)
 	local hour = time.h
 	local min = time.m
 	local side = 'AM'
@@ -33,9 +58,9 @@ local function TimeHud()
 		min = "0" .. min
 	end
 
-	if hour > 12 then
+	if hour >= 12 then
 		side = "PM"
-		time = string.FormattedTime(realtime - SecondsInHalfDay)
+		time = string.FormattedTime(CurrentDayTime - SecondsInHalfDay)
 		hour = time.h
 	end
 
@@ -55,7 +80,7 @@ end
 
 local function ClassHud()
 	local W, H = ScrW(), ScrH()
-	local w,h = 150, 60
+	local w,h = 190, 60
 	local x,y = W - w - 30, H - h - 30
 
 	draw.RoundedBox(
@@ -85,11 +110,21 @@ local function ClassHud()
 
 		if realtime > LengthOfPeriodInGame then
 			periodName = "Class Change"
+			if not ClassChangeLast then
+				RingBell()
+			end
+			ClassChangeLast = true
 		elseif periodID > 0 and schedule and schedule[periodID] then
 			periodName = CLASSES[schedule[periodID]].Name
+			if ClassChangeLast then
+				RingBell()
+			end
+			ClassChangeLast = false
 		else
 			periodName = "Invalid"
 		end
+	elseif IsCurfew() then
+		periodName = "Lights Out"
 	end
 
 	draw.SimpleText(
@@ -106,15 +141,15 @@ local function ClassTimeHud()
 	local periodID = GetGlobalInt("ClassPeriod")
 
 	local W, H = ScrW(), ScrH()
-	local cw,ch = 150, 60
-	local w,h = 150, 60
+	local cw,ch = 190, 60
+	local w,h = 190, 60
 	local x,y = W - w - 30, H - h - ch - 30 - 15
 
 	if periodID > 0 then
 		draw.SimpleText(
 			"F1 to view schedule",
 			"CustomFontB",
-			x + w / 2, y - 20,
+			x + w / 2 + 5, y - 20,
 			Color(255,255,255),
 			TEXT_ALIGN_CENTER,
 			TEXT_ALIGN_CENTER
@@ -166,7 +201,7 @@ local function ClassTimeHud()
 		draw.SimpleText(
 			"F1 to view schedule",
 			"CustomFontB",
-			x + w / 2, y + 50,
+			x + w / 2 + 5, y + 50,
 			Color(255,255,255),
 			TEXT_ALIGN_CENTER,
 			TEXT_ALIGN_CENTER
@@ -224,12 +259,53 @@ local function DrawHud()
 
 end
 
+local function CalcDayTime()
+	local curtime = CurTime() - GetGlobalInt("DayTime")
+	local realtimec = curtime / LengthOfDay
+	CurrentDayTime =  realtimec * SecondsInDay
+	CurrentDayHour =  realtimec * SecondsInDay / 3600.0
+end
+
+local function DrawInDetention()
+	if IsInDetention and IsInDetention > CurTime() then
+		local W, H = ScrW(), ScrH()
+		local w,h = 350, 50
+		local x,y = W / 2 - w / 2, 30
+
+		draw.RoundedBox(
+			5,
+			x,y,
+			w,h,
+			Color(192, 57, 43, 50)
+		)
+
+		draw.RoundedBox(
+			5,
+			x+4,y+4,
+			w-8,h-8,
+			Color(192, 57, 43, 100)
+		)
+
+		draw.SimpleText(
+			"Detention Ends in " .. math.Round(IsInDetention - CurTime()) .. " seconds.",
+			"CustomFontA",
+			x + (w/2), y + (h/2),
+			Color(255,255,255),
+			TEXT_ALIGN_CENTER,
+			TEXT_ALIGN_CENTER
+		)
+	end
+end
+
 local function hud()
+	CalcDayTime()
+
 	DrawHud()
 	TimeHud()
 	ClassHud()
 	ClassTimeHud()
 	ClassRoom2D3D()
+	DrawInDetention()
 end
 
 hook.Add("HUDPaint", "MyHudName", hud) -- I'll explain hooks and functions in a second
@@ -292,8 +368,8 @@ local function OverheadNames()
 				lastName = v:GetNWString("lastName")
 			end
 
-			if v:GetNWString("grade") and v:GetNWString("grade") ~= "" then
-				title = v:GetNWString("grade")
+			if v:GetNWInt("grade") and v:GetNWInt("grade") ~= "" then
+				title = v:GetNWInt("grade") .. "th Grader"
 			end
 
 			draw.DrawText(

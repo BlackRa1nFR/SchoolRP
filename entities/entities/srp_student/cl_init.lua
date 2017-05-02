@@ -50,7 +50,7 @@ function ENT:Post()
 			"npcs_teacher_title",
 			-0,
 			-375,
-			Color(22, 160, 133, 255 * alphaStrength),
+			Color(142, 68, 173, 255 * alphaStrength),
 			1,
 			1
 		)

@@ -12,6 +12,8 @@ include("client/cl_atmos.lua")
 include("client/cl_scoreboard.lua")
 include("client/cl_schedule.lua")
 include("client/cl_character_creation.lua")
+include("client/cl_notifications.lua")
+include("client/cl_minimap.lua")
 
 concommand.Add("pos", function(ply)
 	local p = ply:GetPos()

@@ -6,17 +6,11 @@ util.AddNetworkString("database")
 local defaultValues = {
 	["money"] = 100,
 	["xp"] = 0,
-	["grade"] = "9th Grade",
+	["grade"] = 9,
 	["firstName"] = "",
 	["lastName"] = "",
 	["model"] = "models/player/Group01/male_02.mdl",
-	["schedule"] = {
-		[1] = "AlgerbraI",
-		[2] = "BiologyI",
-		[3] = "Lunch",
-		[4] = "English9",
-		[5] = "WorldHistory",
-	},
+	["schedule"] = GenerateSchedule(9),
 }
 
 local tables = {

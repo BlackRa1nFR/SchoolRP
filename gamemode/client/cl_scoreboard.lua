@@ -218,10 +218,10 @@ function CreateScoreboard()
 				draw.SimpleText(
 					name,
 					"ScoreBoardPlayerNames",
-					110,
+					90,
 					h / 2,
 					Color(255,255,255),
-					TEXT_ALIGN_CENTER,
+					TEXT_ALIGN_LEFT,
 					TEXT_ALIGN_CENTER
 				)
 

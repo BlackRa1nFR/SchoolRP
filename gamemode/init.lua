@@ -1,4 +1,6 @@
 
+util.AddNetworkString("notification")
+
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 
@@ -14,6 +16,8 @@ AddCSLuaFile("client/cl_atmos.lua")
 AddCSLuaFile("client/cl_scoreboard.lua")
 AddCSLuaFile("client/cl_schedule.lua")
 AddCSLuaFile("client/cl_character_creation.lua")
+AddCSLuaFile("client/cl_notifications.lua")
+AddCSLuaFile("client/cl_minimap.lua")
 
 -- Resources
 resource.AddFile("materials/assets/vgui/scoreboard/chalkboard.png")
@@ -30,6 +34,17 @@ include("server/sv_database.lua")
 include("server/sv_player.lua")
 include("server/sv_classes.lua")
 include("server/sv_atmos.lua")
+include("server/sv_console_commands.lua")
+
+CurrentDayTime = -1
+CurrentDayHour = -1
+
+local function CalcDayTime()
+	local curtime = CurTime() - GetGlobalInt("DayTime")
+	local realtimec = curtime / LengthOfDay
+	CurrentDayTime =  realtimec * SecondsInDay
+	CurrentDayHour =  realtimec * SecondsInDay / 3600.0
+end
 
 function GM:PlayerConnect(name, ip)
 	print("Player: " .. name .. " has joined.")
@@ -42,6 +57,12 @@ end
 
 function GM:PlayerInitialSpawn(player)
 	player:SetModel("models/player/Group01/male_02.mdl")
+	player:AllowFlashlight(true)
+	player:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+	
+	local p = POINTS[DORM_POINTS[1][math.random(#DORM_POINTS[1])]]
+	player:SetPos(p[1])
+	player:SetAngles(p[2])
 
 	if player:dbGetValue("firstName") == "" or player:dbGetValue("lastName") == "" then
 		print ("-------->> YOu need to make character :)")
@@ -60,17 +81,29 @@ function GM:PlayerDisconnected(player)
 end
 
 function GM:PlayerSpawn(player)
+	player:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+	local p = POINTS[DORM_POINTS[1][math.random(#DORM_POINTS[1])]]
+	player:SetPos(p[1])
+	player:SetAngles(p[2])
 end
 
 function GM:Think()
 	AtmosGlobal:Think()
+	CalcDayTime()
 end
 
+-- If ya refresh, you need to fix things that may break.
 if #player.GetAll() > 0 then
 	for k,v in pairs(player.GetAll()) do
 		v:dbCheck()
+		v.inDetention = false
 	end
 end
+
+local keepDoorsShut = {
+	[1581] = true,
+	[1582] = true,
+}
 
 timer.Simple(55,
 	function()
@@ -82,7 +115,11 @@ timer.Simple(55,
 		for k,v in pairs(ents.GetAll()) do
 			if v:GetClass() == "prop_door_rotating" then
 				v:SetSaveValue("m_bLocked", false)
-				v:Fire("Open")
+				if keepDoorsShut[v:MapCreationID()] then
+					v:Fire("Close")
+				else
+					v:Fire("Open")
+				end
 			end
 		end
 	end)
@@ -96,38 +133,3 @@ timer.Simple(
 			end
 		end
 	end)
-
-
---------------- Temp solution. Will move to sv_console_commands.lua later.
-local models = {
-	[1] = "models/player/Group01/male_02.mdl",
-	[2] = "models/player/Group01/male_01.mdl",
-	[3] = "models/player/Group01/female_06.mdl",
-	[4] = "models/player/Group01/female_05.mdl",
-}
-
-concommand.Add("changemodel", function(ply, cmd, args)
-	local m = math.Round(args[1])
-	local model = models[m]
-
-	if m and model then
-		ply:dbSetValue("model", model)
-		ply:SetModel(model)
-	end
-end)
-
-concommand.Add("changefirstname", function(ply, cmd, args)
-	local name = args[1]
-
-	if name and string.len(name) > 0 then
-		ply:dbSetValue("firstName", name)
-	end
-end)
-
-concommand.Add("changelastname", function(ply, cmd, args)
-	local name = args[1]
-
-	if name and string.len(name) > 0 then
-		ply:dbSetValue("lastName", name)
-	end
-end)

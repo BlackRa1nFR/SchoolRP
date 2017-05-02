@@ -15,6 +15,21 @@ surface.CreateFont( "npcs_teacher_title", {
 	weight 		= 700,
 })
 
+function draw.Circle( x, y, radius, seg )
+	local cir = {}
+
+	table.insert( cir, { x = x, y = y, u = 0.5, v = 0.5 } )
+	for i = 0, seg do
+		local a = math.rad( ( i / seg ) * -360 )
+		table.insert( cir, { x = x + math.sin( a ) * radius, y = y + math.cos( a ) * radius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
+	end
+
+	local a = math.rad( 0 ) -- This is needed for non absolute segment counts
+	table.insert( cir, { x = x + math.sin( a ) * radius, y = y + math.cos( a ) * radius, u = math.sin( a ) / 2 + 0.5, v = math.cos( a ) / 2 + 0.5 } )
+
+	surface.DrawPoly( cir )
+end
+
 function ENT:Post()
 	local dist = self:GetPos():Distance(LocalPlayer():GetPos())
 
@@ -55,6 +70,14 @@ function ENT:Post()
 			1
 		)
 	cam.End3D2D();
+
+	if IsCurfew() then
+		cam.Start3D2D(position + Vector(0,0,2), Angle(0,0,0), 1);
+			surface.SetDrawColor(231, 76, 60, 50 * alphaStrength )
+			draw.NoTexture()
+			draw.Circle(0, 0, 200, 10)
+		cam.End3D2D()
+	end
 end
 
 function ENT:Draw()
