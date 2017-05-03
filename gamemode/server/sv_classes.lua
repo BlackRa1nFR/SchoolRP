@@ -121,7 +121,6 @@ function StartPeriod(period)
 
 				for k,v in pairs(Students) do
 					if v.ent then
-						print (v.Schedule[period])
 						local c = CLASSES[v.Schedule[period]]
 						local d = 's_' .. c.Room
 

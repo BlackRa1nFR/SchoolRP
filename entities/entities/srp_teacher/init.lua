@@ -16,7 +16,6 @@ local TravelPoints = {
 
 function ENT:GoToRespawn()
 	local p = POINTS[ROAMING_POINTS[math.random(#ROAMING_POINTS)]]
-	print (p[1])
 	self:SetPos(p[1] + Vector(math.random(-50, 50), math.random(-50, 50), 0))
 	self:SetAngles(p[2])
 end
