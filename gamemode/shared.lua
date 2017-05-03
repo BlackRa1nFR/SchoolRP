@@ -31,5 +31,5 @@ LengthOfPeriod = CalcMinute * LengthOfPeriodInGame
 PeriodIntermission = CalcMinute * PeriodIntermissionInGame
 
 function IsCurfew()
-	return CurrentDayHour > 22 or CurrentDayHour < 6
+	return CurrentDayHour > 22 or CurrentDayHour < 5.5
 end
