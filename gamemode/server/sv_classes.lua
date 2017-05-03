@@ -23,7 +23,7 @@ function StartNewDay(timeStart)
 
 	timer.Create(
 		"DayTimeTimer",
-		LengthOfDay,
+		LengthOfDay - timeStart * CalcMinute,
 		0,
 		function()
 			StartNewDay()
@@ -55,7 +55,7 @@ function CreatePeriods()
 	timer.Create(
 		"PeriodTimer",
 		LengthOfPeriod + PeriodIntermission,
-		NumberOfPeriods-1,
+		NumberOfPeriods,
 		function()
 			CurPeriod = CurPeriod + 1
 			StartPeriod(CurPeriod)
