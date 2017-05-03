@@ -23,7 +23,9 @@ PeriodIntermissionInGame = 30
 -- Start school at 7:00 AM
 SchoolStarts = 7 * 60
 -- Start Day 1 at 6:50 AM
-StartAtTime = 60 * 7 - 10
+-- StartAtTime = 60 * 7 - 10
+-- Start Day 1 at 0:00 AM
+StartAtTime = 0
 
 LengthOfPeriod = CalcMinute * LengthOfPeriodInGame
 PeriodIntermission = CalcMinute * PeriodIntermissionInGame

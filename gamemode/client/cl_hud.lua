@@ -65,7 +65,11 @@ local function TimeHud()
 	end
 
 	if hour <= 9 then
-		hour = "0" .. hour
+		if hour == 0 then
+			hour = "12"
+		else
+			hour = "0" .. hour
+		end
 	end
 
 	draw.SimpleText(
