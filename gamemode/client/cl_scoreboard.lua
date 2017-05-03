@@ -195,7 +195,7 @@ function CreateScoreboard()
 			local title = "9th Grader"
 			local status = "Player"
 
-			if v.SteamID64 and v:SteamID64() == 76561198079126590 then
+			if v.SteamID64 and v:SteamID64() == "76561198079126590" then
 				icon = developerMat
 				status = "Developer"
 			elseif v:IsSuperAdmin() then

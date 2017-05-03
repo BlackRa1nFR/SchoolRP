@@ -64,7 +64,7 @@ function CreatePeriods()
 end
 
 function StartPeriod(period)
-	if period >= NumberOfPeriods then
+	if period > NumberOfPeriods then
 		SetGlobalInt("ClassPeriod", 0)
 		SetGlobalInt("ClassPeriodEnds", -1)
 
