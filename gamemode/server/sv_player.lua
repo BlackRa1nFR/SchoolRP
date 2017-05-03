@@ -14,6 +14,21 @@ local teams = {
 	}
 }
 
+function player:GetRPName()
+	local firstName = self:dbGetValue("firstName")
+	local lastName = self:dbGetValue("lastName")
+
+	if not firstName or firstName == "" then
+		firstName = "Barack"
+	end
+
+	if not lastName or lastName == "" then
+		lastName = "Obama"
+	end
+
+	return firstName .. " " .. lastName
+end
+
 function player:SetGamemodeTeam(n)
 	if not teams[n] then return end
 

@@ -9,6 +9,14 @@ local function notificationReceive(tab)
 			end
 		elseif k == "openschedule" then
 			OpenSchedule(nil, "gm_showhelp")
+		elseif k == "specialchatmsg" then
+			local c = v.Color
+
+			if not c then
+				c = Color(255,255,255)
+			end
+
+			chat.AddText(c, v.msg)
 		end
 	end
 end
