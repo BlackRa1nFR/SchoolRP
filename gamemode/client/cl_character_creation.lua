@@ -79,12 +79,14 @@ local function DrawCharacterCreation()
 	dFirstName:SetSize(250, 30)
 	dFirstName:SetText("")
 	dFirstName:SetFont("CharacterCreationInfo")
+	dFirstName:SetValue(LocalPlayer():GetNWString("firstName"))
 
 	local dLastName = vgui.Create( "DTextEntry", dCharacterCreation)
 	dLastName:SetPos(90, topHeight + (4 - 1) * 45 + 14)
 	dLastName:SetSize(250, 30)
 	dLastName:SetText("")
 	dLastName:SetFont("CharacterCreationInfo")
+	dLastName:SetValue(LocalPlayer():GetNWString("lastName"))
 
 	local models = {
 		[1] = "models/player/Group01/male_02.mdl",
@@ -153,7 +155,7 @@ local function DrawCharacterCreation()
 	end)
 end
 
-local function OpenCharacterCreation()
+function OpenCharacterCreation()
 	if not IsValid(dCharacterCreation) then
 		DrawCharacterCreation()
 	end 

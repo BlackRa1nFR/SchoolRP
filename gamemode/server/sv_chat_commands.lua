@@ -62,15 +62,28 @@ hook.Add("PlayerSay", "textCommands", function(ply, text, isTeam)
 	end
 end)
 
-local function chatCommand( ply, text, public )
+local function ScheduleChatCommand( ply, text, public )
     if (string.starts(text, "!sch")) then
 		net.Start("notification")
 			net.WriteTable({
 				["openschedule"] = true
 			})
 		net.Send(ply)
-		return(false)
+		return (false)
     end
 end
 
-hook.Add( "PlayerSay", "schedule", chatCommand)
+hook.Add( "PlayerSay", "schedule", ScheduleChatCommand)
+
+local function CharacterCreationChatCommand( ply, text, public )
+    if (string.starts(text, "!name")) then
+		net.Start("notification")
+			net.WriteTable({
+				["opencharactercreation"] = true
+			})
+		net.Send(ply)
+		return (false)
+    end
+end
+
+hook.Add( "PlayerSay", "characterCreation", CharacterCreationChatCommand)

@@ -9,6 +9,8 @@ local function notificationReceive(tab)
 			end
 		elseif k == "openschedule" then
 			OpenSchedule(nil, "gm_showhelp")
+		elseif k == "opencharactercreation" then
+			OpenCharacterCreation()
 		elseif k == "specialchatmsg" then
 			local c = v.Color
 
