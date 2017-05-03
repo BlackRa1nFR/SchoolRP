@@ -7,6 +7,8 @@ local function notificationReceive(tab)
 			if v > CurTime() then
 				IsInDetention = v
 			end
+		elseif k == "openschedule" then
+			OpenSchedule(nil, "gm_showhelp")
 		end
 	end
 end

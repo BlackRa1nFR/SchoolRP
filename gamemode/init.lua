@@ -35,6 +35,7 @@ include("server/sv_player.lua")
 include("server/sv_classes.lua")
 include("server/sv_atmos.lua")
 include("server/sv_console_commands.lua")
+include("server/sv_chat_commands.lua")
 
 CurrentDayTime = -1
 CurrentDayHour = -1

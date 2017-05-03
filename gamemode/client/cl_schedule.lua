@@ -77,7 +77,7 @@ local function DrawSchedule()
 	end)
 end
 
-local function OpenSchedule( ply, bind, pressed )
+function OpenSchedule( ply, bind, pressed )
     if ( bind == "gm_showhelp" ) then 
 		if IsValid(dSchedule) then
 			if not movingOut and not movingIn then
