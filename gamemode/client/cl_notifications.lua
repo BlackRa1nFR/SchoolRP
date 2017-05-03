@@ -12,13 +12,7 @@ local function notificationReceive(tab)
 		elseif k == "opencharactercreation" then
 			OpenCharacterCreation()
 		elseif k == "specialchatmsg" then
-			local c = v.Color
-
-			if not c then
-				c = Color(255,255,255)
-			end
-
-			chat.AddText(c, v.msg)
+			chat.AddText(unpack(v))
 		end
 	end
 end
