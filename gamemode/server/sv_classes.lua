@@ -4,6 +4,20 @@ CurPeriod = -1
 
 local Students = {}
 
+local function PutEveryoneRoam()
+	for k,v in pairs(TEACHERS) do
+		if v.ent then
+			v.ent:Roam()
+		end
+	end
+
+	for k,v in pairs(Students) do
+		if v.ent then
+			v.ent:Roam()
+		end
+	end
+end
+
 function StartNewDay(timeStart)
 	if not timeStart then
 		timeStart = 0
@@ -15,6 +29,7 @@ function StartNewDay(timeStart)
 	timer.Remove("DayTimeTimer")
 	timer.Remove("StartClasses")
 	timer.Remove("PeriodTimer")
+	PutEveryoneRoam()
 
 	DayTime = CurTime() - timeStart * CalcMinute
 	SetGlobalInt("DayTime", DayTime)
@@ -67,18 +82,7 @@ function StartPeriod(period)
 	if period > NumberOfPeriods then
 		SetGlobalInt("ClassPeriod", 0)
 		SetGlobalInt("ClassPeriodEnds", -1)
-
-		for k,v in pairs(TEACHERS) do
-			if v.ent then
-				v.ent:Roam()
-			end
-		end
-
-		for k,v in pairs(Students) do
-			if v.ent then
-				v.ent:Roam()
-			end
-		end
+		PutEveryoneRoam()
 	else
 		SetGlobalInt("ClassPeriod", period)
 		SetGlobalInt("ClassPeriodEnds", CurTime() + LengthOfPeriod + PeriodIntermission)
