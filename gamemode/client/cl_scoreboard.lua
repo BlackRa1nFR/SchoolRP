@@ -190,7 +190,17 @@ function CreateScoreboard()
 				end
 			end
 	
-			local name = v:GetName()
+			local firstName = "Barack"
+			local lastName = "Obama"
+
+			if v:GetNWString("firstName") ~= "" then
+				firstName = v:GetNWString("firstName")
+			end
+
+			if v:GetNWString("lastName") ~= "" then
+				lastName = v:GetNWString("lastName")
+			end
+
 			local icon = regularMat
 			local title = "9th Grader"
 			local status = "Player"
@@ -216,7 +226,7 @@ function CreateScoreboard()
 				end
 
 				draw.SimpleText(
-					name,
+					firstName .. " " .. lastName,
 					"ScoreBoardPlayerNames",
 					90,
 					h / 2,

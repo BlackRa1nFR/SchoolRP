@@ -56,7 +56,7 @@ function ENT:MoveToPos( pos, options )
 
 	if ( !path:IsValid() ) then return "failed" end
 
-	while ( not self.Cancel and path:IsValid() ) do
+	while ( not self.Cancel and not IsCurfew() and path:IsValid() ) do
 		path:Update( self )
 
 		-- Draw the path (only visible on listen servers or single player)

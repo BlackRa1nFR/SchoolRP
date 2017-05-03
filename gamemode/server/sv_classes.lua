@@ -218,6 +218,23 @@ timer.Simple(
 			v.ent = SpawnTeacher(v)
 		end
 
+		local principal = {
+			["Name"] = "Principal Skinner",
+			["Title"] = "Principal",
+			["Model"] = "models/monk.mdl"
+		}
+		principal.ent = SpawnTeacher(principal)
+		principal.ent:Roam(SCHOOL_POINTS)
+
+		local detentionTeacher = {
+			["Name"] = "Mr. " .. TEACHER_NAMES[math.random(#TEACHER_NAMES)],
+			["Title"] = "Detention Teacher",
+			["Model"] = TEACHER_MODELS[1][math.random(#TEACHER_MODELS[1])]
+		}
+		detentionTeacher.ent = SpawnTeacher(detentionTeacher)
+		detentionTeacher.ent:SetPos(POINTS['t_StudyingRoom1'][1])
+		detentionTeacher.ent:SetDestination('t_StudyingRoom1')
+
 		local schs = {
 			[9] = {
 				[1] = {"AlgerbraI"},
